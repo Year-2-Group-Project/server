@@ -31,17 +31,16 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 86400, // in ms
-    domain: "localhost:19006"
+    secure: false,
+    maxAge: 86400000, // in ms
   },
 }));
-
 
 const db = mysql.createConnection({
   user: "root",
   host: "localhost",
-  password: "Shiraz7800!",
-  database: "Login",
+  password: "password",
+  database: "group_proj_yr2",
 });
 
 // const db = mysql.createConnection({
@@ -85,7 +84,7 @@ app.post("/login", function (req, res) {
       if (result.length > 0) {
         bcrypt.compare(password, result[0].Password, (error, response) => {
           if (response) {
-            req.session.user = result;
+            req.session.user = result[0].Username;
             res.send(result);
           } else {
             res.send({ message: "Wrong username/password, please try again" });
@@ -104,12 +103,6 @@ app.get("/login", function (req, res) {
     res.send({ loggedIn: true, user: req.session.user });
   } else {
     res.send({ loggedIn: false });
-  }
-  if (req.session.views) {
-    req.session.views += 1;
-    console.log(req.session.views);
-  } else {
-    req.session.views = 1;
   }
 });
 
