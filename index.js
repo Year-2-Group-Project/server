@@ -1,33 +1,55 @@
-// 1234
+/// test23323
 
 const express = require("express");
-const app = express();
 const mysql = require("mysql");
 const cors = require("cors");
+const bcrypt = require("bcryptjs");
 
-app.use(cors());
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-const bcrypt = require("bcryptjs");
+
 const { response } = require("express");
+
+const app = express();
+
+app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:19006/"],
-    methods: ["GET", "POST", "LISTEN"],
+    origin: ["http://localhost:19007"],
+    methods: ["GET", "POST"],
     credentials: true,
-  })
-);
+  }));
 
 app.use(cookieParser());
-app.use(express.json());
+
+app.set('trust proxy', 1)
+
+app.use(session({
+  key: "userId",
+  secret: "keyboard cat",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 86400, // in ms
+    domain: "localhost:19006"
+  },
+}));
+
 
 const db = mysql.createConnection({
   user: "root",
   host: "localhost",
-  password: "",
-  database: "group_proj_yr2",
+  password: "Shiraz7800!",
+  database: "Login",
 });
+
+// const db = mysql.createConnection({
+//   user: "bb226c87aee8d4",
+//   host: "eu-cdbr-west-01.cleardb.com",
+//   password: "d4caacc0",
+//   database: "heroku_7accb2240b414d1",
+// });
 
 // user attempting to signup
 app.post("/signup", function (req, res) {
@@ -49,22 +71,19 @@ app.post("/signup", function (req, res) {
   );
 });
 
-// fetching from db
 // User login
-app.post("/login", (req, res) => {
+app.post("/login", function (req, res) {
   const username = req.body.username;
   const password = req.body.password;
-
   db.query(
-    "SELECT Username, Password FROM student WHERE Username = ?;",
-    username,
+    "SELECT Username, Password FROM student WHERE Username = ?",
+    [username],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       }
-
       if (result.length > 0) {
-        bcrypt.compare(password, result[0].password, (error, response) => {
+        bcrypt.compare(password, result[0].Password, (error, response) => {
           if (response) {
             req.session.user = result;
             res.send(result);
@@ -77,6 +96,21 @@ app.post("/login", (req, res) => {
       }
     }
   );
+});
+
+// Checking for user login
+app.get("/login", function (req, res) {
+  if (req.session.user) {
+    res.send({ loggedIn: true, user: req.session.user });
+  } else {
+    res.send({ loggedIn: false });
+  }
+  if (req.session.views) {
+    req.session.views += 1;
+    console.log(req.session.views);
+  } else {
+    req.session.views = 1;
+  }
 });
 
 // fetching from
@@ -176,9 +210,34 @@ app.post("/posts", function (req, res) {
   );
 });
 
-app.listen(process.env.PORT || 880, () => {
+app.post("/join", function (req, res) {
+  const userID = req.body.userID;
+  const subforumID = req.body.subforumID;
+  const role = "test"
+  db.query(
+    "INSERT INTO subforum_members (Sub_ID, Student_ID, Role) VALUES (?,?,?)",
+    [subforumID, userID, role],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(result);
+      console.log(result);
+    }
+  );
+});
+
+
+app.listen(19007, () => {
   console.log("Server running");
 });
+
+
+// app.listen(process.env.PORT || 880, () => {
+//   console.log("Server running");
+// });
+
+
 
 //login details
 //mysql://bb226c87aee8d4:d4caacc0@eu-cdbr-west-01.cleardb.com/heroku_7accb2240b414d1?reconnect=true
