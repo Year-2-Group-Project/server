@@ -176,7 +176,7 @@ app.post("/posts", function (req, res) {
   );
 });
 
-app.listen(process.env.PORT || 880, () => {
+app.listen(19007, () => {
   console.log("Server running");
 });
 
