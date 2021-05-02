@@ -109,6 +109,14 @@ app.get("/login", function (req, res) {
   }
 });
 
+// Logout
+// app.get("/logout", function (req, res) {
+//   res.cookie('token', 'none', {
+//     expires: new Date(Date.now() + 5 * 1000),
+//     httpOnly: true,
+//   });
+// });
+
 // fetching from
 app.post("/fetch", function (req, res) {
   const username = req.body.username;
