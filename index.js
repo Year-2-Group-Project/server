@@ -223,6 +223,41 @@ app.post("/join", function (req, res) {
   );
 });
 
+// get user id
+app.post("/getUserID", function (req, res) {
+  const cookieUsername = req.body.cookieUsername;
+  db.query(
+    "SELECT Student_ID from student WHERE Username = ?",
+    [cookieUsername],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(result);
+      console.log("result contains: " + result);
+    }
+  );
+});
+
+app.post("/post/create", function (req, res) {
+  const title = req.body.title;
+  const content = req.body.content;
+  const currentDateTime = req.body.currentDateTime;
+  const userID = userID;
+  const subforumID = subforumID;
+  db.query(
+    "INSERT INTO post (Post_title, Post_content, Post_date, Student_ID, Sub_ID) VALUES (?,?,?,?,?)",
+    [title, content, currentDateTime, userID, subforumID],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(result);
+      console.log(result);
+    }
+  );
+});
+
 app.listen(19007, () => {
   console.log("Server running");
 });
