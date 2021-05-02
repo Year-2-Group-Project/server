@@ -42,8 +42,8 @@ app.use(
 const db = mysql.createConnection({
   user: "root",
   host: "localhost",
-  password: "password",
-  database: "group_proj_yr2",
+  password: "Shiraz7800!",
+  database: "Login",
 });
 
 // const db = mysql.createConnection({
@@ -209,10 +209,21 @@ app.post("/posts", function (req, res) {
 app.post("/join", function (req, res) {
   const userID = req.body.userID;
   const subforumID = req.body.subforumID;
-  const role = "test";
+  const role = "member";
   db.query(
     "INSERT INTO subforum_members (Sub_ID, Student_ID, Role) VALUES (?,?,?)",
     [subforumID, userID, role],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(result);
+      console.log(result);
+    }
+  );
+  db.query(
+    "UPDATE subforum SET No_members = No_members + 1 WHERE Sub_ID = ?",
+    [subforumID],
     (err, result) => {
       if (err) {
         console.log(err);
