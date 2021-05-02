@@ -243,8 +243,8 @@ app.post("/post/create", function (req, res) {
   const title = req.body.title;
   const content = req.body.content;
   const currentDateTime = req.body.currentDateTime;
-  const userID = userID;
-  const subforumID = subforumID;
+  const userID = req.body.userID;
+  const subforumID = req.body.subforumID;
   db.query(
     "INSERT INTO post (Post_title, Post_content, Post_date, Student_ID, Sub_ID) VALUES (?,?,?,?,?)",
     [title, content, currentDateTime, userID, subforumID],
