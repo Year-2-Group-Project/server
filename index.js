@@ -42,8 +42,8 @@ app.use(
 const db = mysql.createConnection({
   user: "root",
   host: "localhost",
-  password: "Shiraz7800!",
-  database: "Login",
+  password: "password",
+  database: "group_proj_yr2",
 });
 
 // const db = mysql.createConnection({
@@ -68,6 +68,20 @@ app.post("/signup", function (req, res) {
     (err, result) => {
       if (err) {
         console.log(err);
+      }
+    }
+  );
+});
+
+// Checking if user exists
+app.get("/checkUsers", function (req, res) {
+  db.query(
+    "SELECT Username FROM student",
+    (err, result) => {
+      if (err) {
+        res.send({ err: err});
+      } else {
+        res.send(result);
       }
     }
   );
@@ -108,6 +122,14 @@ app.get("/login", function (req, res) {
     res.send({ loggedIn: false });
   }
 });
+
+// Logout
+// app.get("/logout", function (req, res) {
+//   res.cookie('token', 'none', {
+//     expires: new Date(Date.now() + 5 * 1000),
+//     httpOnly: true,
+//   });
+// });
 
 // fetching from
 app.post("/fetch", function (req, res) {
