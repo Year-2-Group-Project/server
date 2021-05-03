@@ -74,16 +74,14 @@ app.post("/signup", function (req, res) {
 });
 
 // Checking if user exists
-app.post("/checkUser", function (req, res) {
-  const username = req.body.username;
+app.get("/checkUsers", function (req, res) {
   db.query(
-    "SELECT Username FROM student WHERE Username = ?",
-    [username],
+    "SELECT Username FROM student",
     (err, result) => {
       if (err) {
-        res.send(false);
+        res.send({ err: err});
       } else {
-        res.send(true);
+        res.send(result);
       }
     }
   );
