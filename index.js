@@ -42,8 +42,8 @@ app.use(
 const db = mysql.createConnection({
   user: "root",
   host: "localhost",
-  password: "Shiraz7800!",
-  database: "Login",
+  password: "password",
+  database: "group_proj_yr2",
 });
 
 // const db = mysql.createConnection({
@@ -68,6 +68,22 @@ app.post("/signup", function (req, res) {
     (err, result) => {
       if (err) {
         console.log(err);
+      }
+    }
+  );
+});
+
+// Checking if user exists
+app.post("/checkUser", function (req, res) {
+  const username = req.body.username;
+  db.query(
+    "SELECT Username FROM student WHERE Username = ?",
+    [username],
+    (err, result) => {
+      if (err) {
+        res.send(false);
+      } else {
+        res.send(true);
       }
     }
   );
