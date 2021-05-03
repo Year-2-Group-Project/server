@@ -42,8 +42,8 @@ app.use(
 const db = mysql.createConnection({
   user: "root",
   host: "localhost",
-  password: "Shiraz7800!",
-  database: "Login",
+  password: "password",
+  database: "group_proj_yr2",
 });
 
 // const db = mysql.createConnection({
@@ -195,7 +195,7 @@ app.post("/posts", function (req, res) {
   const subforumID = req.body.subforumID;
 
   db.query(
-    "SELECT Post_title, Post_content, Post_date FROM post WHERE Sub_id = ?",
+    "SELECT Post_ID, Post_title, Post_content, Post_date FROM post WHERE Sub_id = ?",
     [subforumID],
     (err, result) => {
       if (err) {
@@ -265,6 +265,52 @@ app.post("/post/create", function (req, res) {
       }
       res.send(result);
       console.log(result);
+    }
+  );
+});
+
+app.post("/getComments", function (req, res) {
+  const postID = req.body.postID;
+
+  db.query(
+    "SELECT Comment_content, Comment_date, Student_ID FROM comment WHERE Post_ID = ?",
+    [postID],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(result);
+    }
+  );
+});
+
+app.post("/comments/add", function (req, res) {
+  const commentInput = req.body.commentInput;
+  const currentDateTime = req.body.currentDateTime;
+  const userID = req.body.userID;
+  const postID = req.body.postID;
+  db.query(
+    "INSERT into comment (Comment_content, Comment_date, Student_ID, Post_ID) VALUES (?,?,?,?)",
+    [commentInput, currentDateTime, userID, postID],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(result);
+    }
+  );
+});
+
+app.post("/comments/username", function (req, res) {
+  const id = req.body.id;
+  db.query(
+    "SELECT Username from student WHERE Student_ID = ?",
+    [id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(result);
     }
   );
 });
