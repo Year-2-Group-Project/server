@@ -73,6 +73,20 @@ app.post("/signup", function (req, res) {
   );
 });
 
+// Checking if user exists
+app.get("/checkUsers", function (req, res) {
+  db.query(
+    "SELECT Username FROM student",
+    (err, result) => {
+      if (err) {
+        res.send({ err: err});
+      } else {
+        res.send(result);
+      }
+    }
+  );
+});
+
 // User login
 app.post("/login", function (req, res) {
   const username = req.body.username;
@@ -109,10 +123,17 @@ app.get("/login", function (req, res) {
   }
 });
 
+// Logout
+// app.get("/logout", function (req, res) {
+//   res.cookie('token', 'none', {
+//     expires: new Date(Date.now() + 5 * 1000),
+//     httpOnly: true,
+//   });
+// });
+
 // fetching from
 app.post("/fetch", function (req, res) {
   const username = req.body.username;
-  console.log(username);
   db.query(
     "SELECT Password FROM student WHERE Username = ? ",
     [username],
@@ -165,6 +186,7 @@ app.post("/subforum/create", function (req, res) {
   const title = req.body.title;
   const description = req.body.description;
   const isPrivate = req.body.isPrivate;
+  const userID = req.body.userID
 
   db.query(
     "INSERT INTO subforum (Sub_title, Sub_description, Sub_private) VALUES (?,?,?)",
@@ -176,6 +198,77 @@ app.post("/subforum/create", function (req, res) {
     }
   );
 });
+
+
+app.post("/subforum/user", function (req, res) {
+  const userID = req.body.userID
+
+  db.query(
+    "INSERT INTO subforum (Sub_title, Sub_description, Sub_private) VALUES (?,?,?)",
+    [title, description, isPrivate],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+    }
+  );
+});
+
+
+app.post("/subforum/getsubID", function (req, res) {
+  const title = req.body.title
+
+  db.query(
+    "Select Sub_ID from subforum where Sub_title = ?",
+    [title],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(result);
+    }
+  );
+});
+
+
+app.post("/getRole", function (req, res) {
+  const subforumID = req.body.subforumID;
+  const userID = req.body.userID;
+
+  db.query(
+    "SELECT Role FROM subforum_members Where Sub_ID = ? and Student_ID = ?", 
+    [subforumID, userID],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(result);
+    }
+  );
+  console.log(subforumID);
+  console.log(userID);
+});
+
+
+app.post("/subforum/subPresident", function (req, res) {
+  const userID = req.body.userID
+  const subforum_id = req.body.subforum_id
+  console.log(subforum_id)
+
+  db.query(
+    "INSERT INTO subforum_members (Sub_ID, Student_ID, Role) VALUES (?,?,?)",
+    [subforum_id, userID, "President"],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(result);
+    }
+  );
+});
+
+
+
 
 // get all subforum
 app.get("/subforums", function (req, res) {
@@ -245,7 +338,6 @@ app.post("/getUserID", function (req, res) {
         console.log(err);
       }
       res.send(result);
-      console.log("result contains: " + result);
     }
   );
 });
@@ -264,7 +356,6 @@ app.post("/post/create", function (req, res) {
         console.log(err);
       }
       res.send(result);
-      console.log(result);
     }
   );
 });
